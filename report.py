@@ -6,9 +6,9 @@ from reportlab.lib.utils import ImageReader
 import tempfile
 from PIL import Image
 import os
+import textwrap
 
 def wrap_text(text, max_width):
-    import textwrap
     lines = text.split("\n")
     wrapped = []
     for line in lines:
