@@ -102,10 +102,12 @@ elif selected == "Upload & Analyze":
         sample_col1, sample_col2 = st.columns(2)
         with sample_col1:
             if st.button("Load Sample Image 1"):
-                uploaded = "sample_images/sample1.png"
+                with open("sample_images/example1.png", "rb") as f:
+                    uploaded = f
         with sample_col2:
             if st.button("Load Sample Image 2"):
-                uploaded = "sample_images/sample2.png"
+                with open("sample_images/example2.png", "rb") as f:
+                    uploaded = f
 
     if not uploaded:
         st.info("👆 Upload or select an MRI slice to begin analysis")
