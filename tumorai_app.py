@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 SLACK_WEBHOOK = os.getenv("SLACK_WEBHOOK")
+st.write("Webhook loaded?", SLACK_WEBHOOK is not None)
+
 
 st.set_page_config(page_title="TumorAI", layout="wide")
 
@@ -70,6 +72,23 @@ with st.sidebar:
         }
     )
 
+st.markdown("---")
+
+# ✅ Slack Ping Test Button
+if st.button("🔔 Ping Slack (test)"):
+    from utils.notifications import send_slack_message
+    import os
+    SLACK_WEBHOOK = os.getenv("SLACK_WEBHOOK")
+
+    if SLACK_WEBHOOK:
+        success = send_slack_message(SLACK_WEBHOOK, "✅ TumorAI test ping successful from web app.")
+        if success:
+            st.success("Slack message sent!")
+        else:
+            st.error("Slack message failed. Check webhook or logs.")
+    else:
+        st.warning("SLACK_WEBHOOK not loaded. Check your secrets config.")
+        
 st.title("🧠 TumorAI")
 
 
