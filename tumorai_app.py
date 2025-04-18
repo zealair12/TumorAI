@@ -169,3 +169,52 @@ elif selected == "Upload & Analyze":
             st.session_state.avg_confidence = avg_confidence
         except Exception as e:
             st.error("❌ Failed to create color-coded overlay.")
+...        with sample_col1:
+            if st.button("Load Sample Image 1"):
+                with open("sample_images/example1.jpg", "rb") as f:
+                    uploaded = io.BytesIO(f.read())
+        with sample_col2:
+            if st.button("Load Sample Image 2"):
+                with open("sample_images/example2.jpg", "rb") as f:
+                    uploaded = io.BytesIO(f.read())
+
+elif selected == "Generate Report":
+    st.subheader("📄 Generate Report")
+
+    if "image" not in st.session_state or "overlay" not in st.session_state:
+        st.warning("Please upload and analyze an image first in the 'Upload & Analyze' tab.")
+        st.stop()
+
+    guideline_input = st.text_area("Add clinical guideline notes (optional)")
+
+    if st.button("📄 Generate PDF Report"):
+        out_pdf = "TumorAI_Report.pdf"
+        try:
+            with st.spinner("Generating clinical summary with Gemini..."):
+                summary_text, report_text = generate_gemini_summaries(
+                    st.session_state.get("found_labels", []),
+                    st.session_state.get("avg_confidence", 0)
+                )
+
+            create_pdf_report(
+                st.session_state.get("image"),
+                st.session_state.get("overlay"),
+                summary_text,
+                guideline_input,
+                report_text,
+                out_pdf
+            )
+
+            with open(out_pdf, "rb") as file:
+                st.download_button("⬇️ Download Report PDF", data=file, file_name=out_pdf, mime="application/pdf")
+
+            slack_message = "🧠 TumorAI has successfully generated a tumor segmentation report for review."
+            slack_success = send_slack_message(SLACK_WEBHOOK, slack_message)
+            if slack_success:
+                st.success("Slack alert sent.")
+            else:
+                st.warning("Slack alert failed.")
+
+        except Exception as e:
+            st.error("❌ Failed to generate PDF report.")
+            st.exception(e)
