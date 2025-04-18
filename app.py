@@ -6,7 +6,6 @@ from segmentation import load_segmentation_model, segment_image
 from interpreter import interpret_mask
 from summarization import get_summarizer, summarize_report
 from report import create_pdf_report
-from emailer import send_email
 
 st.set_page_config(page_title="TumorAI", layout="centered")
 
@@ -19,6 +18,10 @@ except Exception as e:
     st.stop()
 
 uploaded = st.file_uploader("📤 Upload an MRI slice", type=["png", "jpg", "jpeg"])
+
+if not uploaded:
+    st.info("👆 Upload an MRI slice to begin analysis")
+    st.stop()
 
 if uploaded:
     img = Image.open(uploaded)
@@ -82,14 +85,3 @@ if uploaded:
                 st.download_button("⬇️ Download Report PDF", data=file, file_name=out_pdf, mime="application/pdf")
         except Exception as e:
             st.error("❌ Failed to generate PDF report.")
-
-        st.markdown("---")
-        recipient = st.text_input("📧 Enter recipient email")
-        if st.button("📤 Send Report via Email"):
-            if not recipient:
-                st.warning("Please enter a recipient email address.")
-            else:
-                try:
-                    send_email(recipient, "TumorAI Report", "Attached is the generated tumor segmentation report.", out_pdf)
-                except Exception as e:
-                    st.error("❌ Failed to send email. Please check credentials or recipient address.")
