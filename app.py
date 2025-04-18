@@ -10,7 +10,13 @@ from emailer import send_email
 
 st.set_page_config(page_title="TumorBoard AI Companion", layout="centered")
 
-st.title("TumorAI Companion")
+st.title("TumorAICompanion")
+
+try:
+    summarizer = get_summarizer()
+except Exception as e:
+    st.error("❌ Failed to load summarization model.")
+    st.stop()
 
 uploaded = st.file_uploader("📤 Upload an MRI slice", type=["png", "jpg", "jpeg"])
 
@@ -18,8 +24,17 @@ if uploaded:
     img = Image.open(uploaded)
     st.image(img, caption="Input MRI Slice", use_container_width=True)
 
-    seg_model = load_segmentation_model()
-    mask = segment_image(seg_model, img)
+    try:
+        seg_model = load_segmentation_model()
+    except Exception as e:
+        st.error("❌ Failed to load segmentation model.")
+        st.stop()
+
+    try:
+        mask = segment_image(seg_model, img)
+    except Exception as e:
+        st.error("❌ Error during segmentation. Please try another image.")
+        st.stop()
 
     unique_vals = np.unique(mask)
     class_labels = {
@@ -46,18 +61,31 @@ if uploaded:
     report_text = st.text_area("Paste the clinical report")
     guideline_input = st.text_area("Add clinical guideline notes (optional)")
 
-    summarizer = get_summarizer()
-    summary = summarize_report(summarizer, report_text)
-    st.markdown("**AI Summary:**")
-    st.write(summary)
+    if report_text:
+        try:
+            summary = summarize_report(summarizer, report_text)
+            st.markdown("**AI Summary:**")
+            st.write(summary)
+        except Exception as e:
+            st.error("❌ Failed to generate summary.")
 
     if st.button("📄 Generate PDF Report"):
         out_pdf = "TumorBoard_Report.pdf"
-        create_pdf_report(img, mask_overlay, summary, guideline_input, report_text, out_pdf)
-        with open(out_pdf, "rb") as file:
-            st.download_button("⬇️ Download Report PDF", data=file, file_name=out_pdf, mime="application/pdf")
+        try:
+            create_pdf_report(img, mask_overlay, summary, guideline_input, report_text, out_pdf)
+            with open(out_pdf, "rb") as file:
+                st.download_button("⬇️ Download Report PDF", data=file, file_name=out_pdf, mime="application/pdf")
+        except Exception as e:
+            st.error("❌ Failed to generate PDF report.")
 
         st.markdown("---")
         recipient = st.text_input("📧 Enter recipient email")
         if st.button("📤 Send Report via Email"):
-            send_email(recipient, "TumorAIReport", "Attached is the generated tumor segmentation report.", out_pdf)
+            if not recipient:
+                st.warning("Please enter a recipient email address.")
+            else:
+                try:
+                    send_email(recipient, "TumorBoard AI Report", "Attached is the generated tumor segmentation report.", out_pdf)
+                except Exception as e:
+                    st.error("❌ Failed to send email. Please check credentials or recipient address.")
+
