@@ -1,6 +1,8 @@
 [theme]
-base="light"
-primaryColor="#4CAF50"
-font="sans serif"
+base = "light"
+primaryColor = "#4CAF50"
+font = "sans serif"
+
 [server]
 maxUploadSize = 200
+runOnSave = false

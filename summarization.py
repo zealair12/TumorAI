@@ -4,7 +4,11 @@ from transformers import pipeline
 @st.cache_resource
 
 def get_summarizer():
-    return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+    try:
+        return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+    except Exception as e:
+        st.warning("⚠️ Summarizer model failed to load. Using offline fallback.")
+        return lambda text, max_length=150, min_length=30, do_sample=False: [{"summary_text": "Summarizer unavailable. Please download the report and summarize manually."}]
 
 def summarize_report(summarizer, report_text):
     word_count = len(report_text.strip().split())
