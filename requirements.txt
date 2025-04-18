@@ -12,4 +12,8 @@ transformers @ git+https://github.com/huggingface/transformers.git
 python-docx
 docx2pdf
 reportlab
+smtplib
+email
+python-dotenv
+
 
