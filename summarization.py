@@ -1,4 +1,3 @@
-# summarization.py
 from transformers import pipeline
 import streamlit as st
 import torch
@@ -8,6 +7,7 @@ def get_summarizer():
     return pipeline(
         "summarization",
         model="sshleifer/distilbart-cnn-12-6",
+        framework="pt",  # Force PyTorch
         device=0 if torch.cuda.is_available() else -1
     )
 
@@ -23,4 +23,3 @@ def summarize_report(summarizer, report_text):
 
     result = summarizer(prompt, max_length=150, min_length=30, do_sample=False)
     return result[0]["summary_text"]
-
