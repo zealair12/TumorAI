@@ -12,12 +12,25 @@ st.markdown("""
     <style>
     html, body, [class*="css"]  {
         font-family: 'Courier New', monospace;
-        background-color: #1a1a1a;
-        color: #f2f2f2 !important;
+        background-color: #121212;
+        color: #e0e0e0 !important;
     }
-    h1, h2, h3, h4, h5, h6, .stTextInput label, .stTextArea label, .stSelectbox label, .stFileUploader label, .css-10trblm, .stMarkdown, .stAlert, .stDataFrame, .stCaption, .stDownloadButton, .stButton>button {
+    h1, h2, h3, h4, h5, h6,
+    .stTextInput label,
+    .stTextArea label,
+    .stSelectbox label,
+    .stFileUploader label,
+    .css-10trblm,
+    .stMarkdown,
+    .stAlert,
+    .stDataFrame,
+    .stCaption,
+    .stDownloadButton,
+    .stButton>button,
+    .stInfo,
+    .stSubheader {
         font-family: 'Courier New', monospace !important;
-        color: #f2f2f2 !important;
+        color: #e0e0e0 !important;
     }
     .reportview-container .main .block-container{
         padding-top: 2rem;
@@ -44,14 +57,15 @@ with st.sidebar:
         icons=["house", "cloud-upload", "file-earmark-text"],
         default_index=1,
         styles={
-            "container": {"background-color": "#2c2c2c"},
-            "icon": {"color": "#f2f2f2"},
-            "nav-link": {"color": "#f2f2f2", "font-size": "16px", "font-family": "Courier New, monospace"},
+            "container": {"background-color": "#1c1c1c"},
+            "icon": {"color": "#e0e0e0"},
+            "nav-link": {"color": "#e0e0e0", "font-size": "16px", "font-family": "Courier New, monospace"},
             "nav-link-selected": {"background-color": "#4CAF50", "color": "#ffffff", "font-weight": "bold"}
         }
     )
 
 st.title("🧠 TumorAI")
+
 
 if selected == "Home":
     st.markdown("""
