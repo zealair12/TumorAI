@@ -11,11 +11,23 @@ st.set_page_config(page_title="TumorAI", layout="wide")
 st.markdown("""
     <style>
     html, body, [class*="css"]  {
-        font-family: 'Georgia', serif;
+        font-family: 'Courier New', monospace;
+        background-color: #1a1a1a;
+        color: #f2f2f2;
     }
     .reportview-container .main .block-container{
         padding-top: 2rem;
         padding-bottom: 2rem;
+    }
+    .stButton>button {
+        animation: pulse 1.8s infinite;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+    @keyframes pulse {
+        0% {box-shadow: 0 0 0 0 rgba(0,255,100,0.7);}
+        70% {box-shadow: 0 0 0 10px rgba(0,255,100, 0);}
+        100% {box-shadow: 0 0 0 0 rgba(0,255,100, 0);}
     }
     </style>
 """, unsafe_allow_html=True)
@@ -23,10 +35,15 @@ st.markdown("""
 # Sidebar Navigation
 with st.sidebar:
     selected = option_menu(
-        menu_title="TumorAI Navigation",
+        menu_title="🧬 TumorAI Navigation",
         options=["Home", "Upload & Analyze", "Generate Report"],
         icons=["house", "cloud-upload", "file-earmark-text"],
-        default_index=1
+        default_index=1,
+        styles={
+            "container": {"background-color": "#2c2c2c"},
+            "nav-link": {"color": "#ddd", "font-size": "16px"},
+            "nav-link-selected": {"background-color": "#4CAF50", "color": "white"}
+        }
     )
 
 st.title("🧠 TumorAI")
