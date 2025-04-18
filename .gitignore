@@ -8,3 +8,8 @@ model_cache/
 *.nii.gz
 venv/
 .env
+models/
+*.docx
+*.pdf
+*.png
+.cache/

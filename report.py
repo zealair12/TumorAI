@@ -7,6 +7,14 @@ import tempfile
 from PIL import Image
 import os
 
+def wrap_text(text, max_width):
+    import textwrap
+    lines = text.split("\n")
+    wrapped = []
+    for line in lines:
+        wrapped.extend(textwrap.wrap(line, width=max_width))
+    return wrapped
+
 def create_pdf_report(image, mask, summary, guideline, full_report_text, out_path):
     c = canvas.Canvas(out_path, pagesize=letter)
     width, height = letter
@@ -20,7 +28,6 @@ def create_pdf_report(image, mask, summary, guideline, full_report_text, out_pat
     c.drawString(50, y, "📅 Generated via TumorAI")
     y -= 40
 
-    # Save both images to temp files
     with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_input:
         image.save(tmp_input.name)
         input_path = tmp_input.name
@@ -29,54 +36,52 @@ def create_pdf_report(image, mask, summary, guideline, full_report_text, out_pat
         mask.save(tmp_mask.name)
         mask_path = tmp_mask.name
 
-    # Add uploaded image
+    # Uploaded Image
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "Uploaded MRI Slice")
     y -= 10
     c.drawImage(ImageReader(input_path), 50, y - 220, width=300, height=220, preserveAspectRatio=True)
     y -= 240
 
-    # Add segmentation mask image
+    # Mask Overlay
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "Segmentation Overlay")
     y -= 10
     c.drawImage(ImageReader(mask_path), 50, y - 220, width=300, height=220, preserveAspectRatio=True)
     y -= 240
 
-    # Add summary
+    # Summary
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "Model Summary")
     y -= 20
     text_obj = c.beginText(50, y)
     text_obj.setFont("Helvetica", 12)
-    for line in summary.split("\n"):
+    for line in wrap_text(summary, 90):
         text_obj.textLine(line)
     c.drawText(text_obj)
     y = text_obj.getY() - 20
 
-    # Add guideline
+    # Guideline
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "🧾 Clinical Guideline")
     y -= 20
     text_obj = c.beginText(50, y)
     text_obj.setFont("Helvetica", 12)
-    for line in guideline.split("\n"):
+    for line in wrap_text(guideline, 90):
         text_obj.textLine(line)
     c.drawText(text_obj)
     y = text_obj.getY() - 20
 
-    # Add full report
+    # Full Report
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "📝 Full Clinical Report")
     y -= 20
     text_obj = c.beginText(50, y)
     text_obj.setFont("Helvetica", 12)
-    for line in full_report_text.split("\n"):
+    for line in wrap_text(full_report_text, 90):
         text_obj.textLine(line)
     c.drawText(text_obj)
 
     c.save()
-
-    # Cleanup temp files
     os.remove(mask_path)
     os.remove(input_path)
