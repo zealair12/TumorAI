@@ -8,9 +8,9 @@ from summarization import get_summarizer, summarize_report
 from report import create_pdf_report
 from emailer import send_email
 
-st.set_page_config(page_title="TumorBoard AI Companion", layout="centered")
+st.set_page_config(page_title="TumorAI", layout="centered")
 
-st.title("TumorAICompanion")
+st.title("🧠 TumorAI")
 
 try:
     summarizer = get_summarizer()
@@ -49,12 +49,17 @@ if uploaded:
         st.write("✅ No tumor classes detected.")
 
     interpretation_text = interpret_mask(mask)
-    st.markdown("**Note:**")
+    st.markdown("**📝 Notes:**")
     st.write(interpretation_text)
 
-    mask_overlay = np.array(img.convert("RGB")) * 0.6 + np.array(Image.fromarray(mask * 85).convert("RGB")) * 0.4
-    mask_overlay = Image.fromarray(mask_overlay.astype(np.uint8))
-    st.image(mask_overlay, caption="Segmentation Overlay", use_container_width=True)
+    try:
+        mask_color = Image.fromarray(mask.astype(np.uint8) * 85).convert("RGB").resize(img.size)
+        img_rgb = img.convert("RGB")
+        mask_overlay_np = (np.array(img_rgb) * 0.6 + np.array(mask_color) * 0.4).astype(np.uint8)
+        mask_overlay = Image.fromarray(mask_overlay_np)
+        st.image(mask_overlay, caption="Segmentation Overlay", use_container_width=True)
+    except Exception as e:
+        st.error("❌ Failed to create mask overlay.")
 
     st.markdown("---")
     st.subheader("📄 Generate Report")
@@ -70,7 +75,7 @@ if uploaded:
             st.error("❌ Failed to generate summary.")
 
     if st.button("📄 Generate PDF Report"):
-        out_pdf = "TumorBoard_Report.pdf"
+        out_pdf = "TumorAI_Report.pdf"
         try:
             create_pdf_report(img, mask_overlay, summary, guideline_input, report_text, out_pdf)
             with open(out_pdf, "rb") as file:
@@ -85,7 +90,6 @@ if uploaded:
                 st.warning("Please enter a recipient email address.")
             else:
                 try:
-                    send_email(recipient, "TumorBoard AI Report", "Attached is the generated tumor segmentation report.", out_pdf)
+                    send_email(recipient, "TumorAI Report", "Attached is the generated tumor segmentation report.", out_pdf)
                 except Exception as e:
                     st.error("❌ Failed to send email. Please check credentials or recipient address.")
-
