@@ -1,6 +1,6 @@
 # 🧠 TumorAI: Brain Tumor Segmentation & Reporting System
 
-TumorAI is a streamlined, showcase-ready diagnostic tool that performs tumor segmentation on brain MRI slices using deep learning. It visualizes tumor structures, generates clinical-style reports, and sends automatic alerts to professional channels such as Slack. This project was designed and implemented for the Vanderbilt AI Showcase with emphasis on innovation, automation, and medical impact.
+TumorAI is a streamlined diagnostic tool that performs tumor segmentation on brain MRI slices using deep learning. It visualizes tumor structures, generates clinical-style reports, and sends automatic alerts to professional channels such as Slack. This project was designed and implemented with emphasis on innovation, automation, and medical impact.
 
 ---
 
@@ -137,4 +137,4 @@ GEMINI_API_KEY = "your-google-api-key-here"
 ---
 
 ## 💡 Creator
-Built for the **Vanderbilt AI Showcase** by Zeal
+Zeal
