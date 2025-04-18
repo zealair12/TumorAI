@@ -14,6 +14,12 @@ SLACK_WEBHOOK = os.getenv("SLACK_WEBHOOK")
 
 st.set_page_config(page_title="TumorAI", layout="wide")
 
+# ✅ Debug visibility of Slack Webhook and Button
+st.write("✅ DEBUG: SLACK_WEBHOOK Loaded?", SLACK_WEBHOOK is not None)
+st.write("✅ DEBUG: Button should be below this line 👇")
+if st.button("TEST BUTTON"):
+    st.success("You clicked the test button.")
+
 st.markdown("""
     <style>
     html, body, [class*="css"]  {
