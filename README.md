@@ -23,18 +23,33 @@ TumorAI addresses these challenges by providing an **AI-first assistant** that a
 
 ---
 
-## 🧠 Model Training
+## 🧠 Model Training & Technology Stack
 
-The segmentation model was based on a pre-trained U-Net-style architecture optimized for brain tumor segmentation using the [BraTS (Brain Tumor Segmentation) 2020 dataset](https://www.med.upenn.edu/sbia/brats2020/data.html). Key features:
+TumorAI's segmentation model is built on a U-Net architecture, a convolutional neural network designed for biomedical image segmentation. Here's how it works:
 
-- **Input:** T1-weighted or T2-weighted axial brain MRI slice
-- **Output:** Multiclass pixel mask with 3 classes
-- **Architecture:** U-Net with batch normalization and dropout regularization
-- **Training source:** Adapted from publicly available TensorFlow-based models, specifically [this repo](https://github.com/abhi-kumar/Brain-Tumor-Segmentation-Unet)
-- **Labels:** 
-  - 1: Edema (yellow)
-  - 2: Enhancing Tumor (red)
-  - 3: Necrotic Core (blue)
+### 🔍 U-Net Overview:
+- **Encoder**: captures spatial features using convolution + pooling
+- **Bottleneck**: compresses representation (abstract tumor signal)
+- **Decoder**: reconstructs segmentation masks with upsampling + skip connections
+
+### ⚙️ Technical Details:
+- Framework: TensorFlow (Keras API)
+- Image size: 128×128 grayscale slices (4-channel stacked)
+- Optimizer: Adam
+- Loss: Categorical cross-entropy
+- Postprocessing: Argmax and confidence map extraction
+
+### 📊 Training Dataset:
+- [BraTS 2020](https://www.med.upenn.edu/sbia/brats2020/data.html)
+- Multimodal MRI scans (T1, T2, FLAIR)
+- Ground truth segmentations for 3 tumor types:
+  - Edema (1)
+  - Enhancing Tumor (2)
+  - Necrotic Core (3)
+
+![U-Net Architecture](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*QHGSWRuU8jR1GTR2j3V7YA.png)
+
+> The U-Net model is effective for medical image segmentation due to its ability to preserve fine-grained localization using skip connections.
 
 ---
 
