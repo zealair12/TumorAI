@@ -2,35 +2,46 @@ from docx import Document
 from docx.shared import Inches
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
 import tempfile
 from PIL import Image
 import os
 
 def create_pdf_report(image, mask, summary, guideline, full_report_text, out_path):
-    # Create a temporary canvas
     c = canvas.Canvas(out_path, pagesize=letter)
     width, height = letter
     y = height - 50
 
     c.setFont("Helvetica-Bold", 16)
-    c.drawString(50, y, "Tumor Segmentation Report")
+    c.drawString(50, y, "🧠 TumorAI Report")
     y -= 30
 
     c.setFont("Helvetica", 12)
-    c.drawString(50, y, "📅 Report Generated via TumorAI")
+    c.drawString(50, y, "📅 Generated via TumorAI")
     y -= 40
 
-    # Save segmentation mask to temp image
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
-        mask.save(tmp.name)
-        mask_path = tmp.name
+    # Save both images to temp files
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_input:
+        image.save(tmp_input.name)
+        input_path = tmp_input.name
 
-    # Add mask image to PDF
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_mask:
+        mask.save(tmp_mask.name)
+        mask_path = tmp_mask.name
+
+    # Add uploaded image
     c.setFont("Helvetica-Bold", 14)
-    c.drawString(50, y, "Tumor Segmentation Mask")
+    c.drawString(50, y, "Uploaded MRI Slice")
     y -= 10
-    c.drawImage(mask_path, 50, y - 300, width=400, preserveAspectRatio=True, mask='auto')
-    y -= 320
+    c.drawImage(ImageReader(input_path), 50, y - 220, width=300, height=220, preserveAspectRatio=True)
+    y -= 240
+
+    # Add segmentation mask image
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(50, y, "Segmentation Overlay")
+    y -= 10
+    c.drawImage(ImageReader(mask_path), 50, y - 220, width=300, height=220, preserveAspectRatio=True)
+    y -= 240
 
     # Add summary
     c.setFont("Helvetica-Bold", 14)
@@ -45,7 +56,7 @@ def create_pdf_report(image, mask, summary, guideline, full_report_text, out_pat
 
     # Add guideline
     c.setFont("Helvetica-Bold", 14)
-    c.drawString(50, y, "🧾 Suggested Clinical Guideline")
+    c.drawString(50, y, "🧾 Clinical Guideline")
     y -= 20
     text_obj = c.beginText(50, y)
     text_obj.setFont("Helvetica", 12)
@@ -54,7 +65,7 @@ def create_pdf_report(image, mask, summary, guideline, full_report_text, out_pat
     c.drawText(text_obj)
     y = text_obj.getY() - 20
 
-    # Add full clinical report
+    # Add full report
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "📝 Full Clinical Report")
     y -= 20
@@ -66,5 +77,6 @@ def create_pdf_report(image, mask, summary, guideline, full_report_text, out_pat
 
     c.save()
 
-    # Cleanup temp file
+    # Cleanup temp files
     os.remove(mask_path)
+    os.remove(input_path)
