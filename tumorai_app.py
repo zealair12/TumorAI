@@ -6,13 +6,11 @@ import numpy as np
 from segmentation import load_segmentation_model, segment_image
 from report import create_pdf_report
 from streamlit_option_menu import option_menu
-from utils.notifications import send_slack_message, upload_pdf_to_anonfiles
+from utils.notifications import send_slack_message
 from dotenv import load_dotenv
 
 load_dotenv()
 SLACK_WEBHOOK = os.getenv("SLACK_WEBHOOK")
-st.write("Webhook loaded?", SLACK_WEBHOOK is not None)
-
 
 st.set_page_config(page_title="TumorAI", layout="wide")
 
@@ -60,7 +58,7 @@ st.markdown("""
 # Sidebar Navigation
 with st.sidebar:
     selected = option_menu(
-        menu_title="🧬 TumorAI Navigation",
+        menu_title="🦬 TumorAI Navigation",
         options=["Home", "Upload & Analyze", "Generate Report"],
         icons=["house", "cloud-upload", "file-earmark-text"],
         default_index=1,
@@ -74,33 +72,27 @@ with st.sidebar:
 
 st.markdown("---")
 
-# ✅ Slack Ping Test Button
-if st.button("🔔 Ping Slack (test)"):
-    from utils.notifications import send_slack_message
-    import os
-    SLACK_WEBHOOK = os.getenv("SLACK_WEBHOOK")
-
-    if SLACK_WEBHOOK:
-        success = send_slack_message(SLACK_WEBHOOK, "✅ TumorAI test ping successful from web app.")
-        if success:
-            st.success("Slack message sent!")
-        else:
-            st.error("Slack message failed. Check webhook or logs.")
-    else:
-        st.warning("SLACK_WEBHOOK not loaded. Check your secrets config.")
-        
-st.title("🧠 TumorAI")
-
-
+# 🔔 Slack Ping Test Button
 if selected == "Home":
+    st.title("🧠 TumorAI")
     st.markdown("""
     ## Welcome to TumorAI
     TumorAI is an intelligent assistant that performs tumor segmentation on brain MRI slices.
     Upload a scan, visualize detected regions, and generate a professional PDF report.
     """)
 
+    if st.button("🔔 Ping Slack (test)"):
+        if SLACK_WEBHOOK:
+            success = send_slack_message(SLACK_WEBHOOK, "✅ TumorAI test ping successful from web app.")
+            if success:
+                st.success("Slack message sent!")
+            else:
+                st.error("Slack message failed. Check webhook or logs.")
+        else:
+            st.warning("SLACK_WEBHOOK not loaded. Check your secrets config.")
+
 elif selected == "Upload & Analyze":
-    uploaded = st.file_uploader("📤 Upload an MRI slice", type=["png", "jpg", "jpeg"])
+    uploaded = st.file_uploader("📄 Upload an MRI slice", type=["png", "jpg", "jpeg"])
 
     if not uploaded:
         st.info("👆 Upload an MRI slice to begin analysis")
@@ -176,11 +168,8 @@ elif selected == "Generate Report":
                 out_pdf
             )
 
-            # Offer Download
             with open(out_pdf, "rb") as file:
                 st.download_button("⬇️ Download Report PDF", data=file, file_name=out_pdf, mime="application/pdf")
-
-            # Slack Notify
 
             slack_message = "🧠 TumorAI has successfully generated a tumor segmentation report for review."
             slack_success = send_slack_message(SLACK_WEBHOOK, slack_message)
@@ -192,6 +181,3 @@ elif selected == "Generate Report":
         except Exception as e:
             st.error("❌ Failed to generate PDF report.")
             st.exception(e)
-
-
-
