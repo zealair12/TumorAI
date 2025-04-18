@@ -1,0 +1,10 @@
+__pycache__/
+model_cache/
+*.keras
+*.h5
+*.pyc
+*.pkl
+*.safetensors
+*.nii.gz
+venv/
+.env
