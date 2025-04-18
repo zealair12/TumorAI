@@ -10,10 +10,7 @@ from utils.notifications import send_slack_message
 from dotenv import load_dotenv
 from utils.gemini_dual_summary import generate_gemini_summaries
 
-
-
 load_dotenv()
-
 SLACK_WEBHOOK = os.getenv("SLACK_WEBHOOK")
 
 st.set_page_config(page_title="TumorAI", layout="wide")
@@ -74,34 +71,48 @@ with st.sidebar:
         }
     )
 
-# Global Slack Ping Button (for testing regardless of tab)
-if st.button("🔔 Ping Slack (test)"):
-    if SLACK_WEBHOOK:
-        success = send_slack_message(SLACK_WEBHOOK, "✅ TumorAI test ping successful from web app.")
-        if success:
-            st.success("Slack message sent!")
-        else:
-            st.error("Slack message failed. Check webhook or logs.")
-    else:
-        st.warning("SLACK_WEBHOOK not loaded. Check your secrets config.")
-
 if selected == "Home":
     st.title("🧠 TumorAI")
     st.markdown("""
     ## Welcome to TumorAI
     TumorAI is an intelligent assistant that performs tumor segmentation on brain MRI slices.
     Upload a scan, visualize detected regions, and generate a professional PDF report.
+
+    ### 📱 Try it instantly
+    Scan any of the QR codes below with your phone to launch the app and test it live:
     """)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.image("QR-Code.png", caption="Main App Access", use_column_width=True)
+    with col2:
+        st.image("QR-Code2.png", caption="Slack-integrated Link", use_column_width=True)
+    with col3:
+        st.image("QR-Code3.png", caption="Gemini Report Demo", use_column_width=True)
+    col4, col5 = st.columns(2)
+    with col4:
+        st.image("QR-Code4.png", caption="Light Mode Entry", use_column_width=True)
+    with col5:
+        st.image("QR-Code5.png", caption="Alt Sample Access", use_column_width=True)
 
 elif selected == "Upload & Analyze":
     uploaded = st.file_uploader("📄 Upload an MRI slice", type=["png", "jpg", "jpeg"])
 
+    st.markdown("### Need a test image?")
+    with st.expander("Use one of our sample MRI scans"):
+        sample_col1, sample_col2 = st.columns(2)
+        with sample_col1:
+            if st.button("Load Sample Image 1"):
+                uploaded = "sample_images/sample1.png"
+        with sample_col2:
+            if st.button("Load Sample Image 2"):
+                uploaded = "sample_images/sample2.png"
+
     if not uploaded:
-        st.info("👆 Upload an MRI slice to begin analysis")
+        st.info("👆 Upload or select an MRI slice to begin analysis")
         st.stop()
 
     if uploaded:
-        img = Image.open(uploaded)
+        img = Image.open(uploaded) if isinstance(uploaded, str) else Image.open(uploaded)
         st.image(img, caption="Input MRI Slice", use_container_width=True)
 
         try:
@@ -153,42 +164,3 @@ elif selected == "Upload & Analyze":
             st.session_state.avg_confidence = avg_confidence
         except Exception as e:
             st.error("❌ Failed to create color-coded overlay.")
-
-elif selected == "Generate Report":
-    st.subheader("📄 Generate Report")
-    guideline_input = st.text_area("Add clinical guideline notes (optional)")
-
-    if st.button("📄 Generate PDF Report"):
-        out_pdf = "TumorAI_Report.pdf"
-
-        try:
-            with st.spinner("Generating clinical content with Gemini..."):
-                summary_text, report_text = generate_gemini_summaries(
-                    st.session_state.get("found_labels", []),
-                    st.session_state.get("avg_confidence", 0)
-                )
-
-            create_pdf_report(
-                st.session_state.get("image"),
-                st.session_state.get("overlay"),
-                summary_text,
-                guideline_input,
-                report_text,
-                out_pdf
-            )
-
-
-
-            with open(out_pdf, "rb") as file:
-                st.download_button("⬇️ Download Report PDF", data=file, file_name=out_pdf, mime="application/pdf")
-
-            slack_message = "🧠 TumorAI has successfully generated a tumor segmentation report for review."
-            slack_success = send_slack_message(SLACK_WEBHOOK, slack_message)
-            if slack_success:
-                st.success("Slack alert sent.")
-            else:
-                st.warning("Slack alert failed.")
-
-        except Exception as e:
-            st.error("❌ Failed to generate PDF report.")
-            st.exception(e)
