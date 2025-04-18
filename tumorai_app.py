@@ -169,14 +169,7 @@ elif selected == "Upload & Analyze":
             st.session_state.avg_confidence = avg_confidence
         except Exception as e:
             st.error("❌ Failed to create color-coded overlay.")
-...        with sample_col1:
-            if st.button("Load Sample Image 1"):
-                with open("sample_images/example1.jpg", "rb") as f:
-                    uploaded = io.BytesIO(f.read())
-        with sample_col2:
-            if st.button("Load Sample Image 2"):
-                with open("sample_images/example2.jpg", "rb") as f:
-                    uploaded = io.BytesIO(f.read())
+
 
 elif selected == "Generate Report":
     st.subheader("📄 Generate Report")
