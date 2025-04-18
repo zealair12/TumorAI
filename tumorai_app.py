@@ -8,8 +8,12 @@ from report import create_pdf_report
 from streamlit_option_menu import option_menu
 from utils.notifications import send_slack_message
 from dotenv import load_dotenv
+from utils.gemini_dual_summary import generate_gemini_summaries
+
+
 
 load_dotenv()
+
 SLACK_WEBHOOK = os.getenv("SLACK_WEBHOOK")
 
 st.set_page_config(page_title="TumorAI", layout="wide")
@@ -58,7 +62,7 @@ st.markdown("""
 # Sidebar Navigation
 with st.sidebar:
     selected = option_menu(
-        menu_title="🦬 TumorAI Navigation",
+        menu_title="TumorAI Navigation",
         options=["Home", "Upload & Analyze", "Generate Report"],
         icons=["house", "cloud-upload", "file-earmark-text"],
         default_index=1,
@@ -71,7 +75,6 @@ with st.sidebar:
     )
 
 # Global Slack Ping Button (for testing regardless of tab)
-st.markdown("---")
 if st.button("🔔 Ping Slack (test)"):
     if SLACK_WEBHOOK:
         success = send_slack_message(SLACK_WEBHOOK, "✅ TumorAI test ping successful from web app.")
@@ -157,15 +160,24 @@ elif selected == "Generate Report":
 
     if st.button("📄 Generate PDF Report"):
         out_pdf = "TumorAI_Report.pdf"
+
         try:
+            with st.spinner("Generating clinical content with Gemini..."):
+                summary_text, report_text = generate_gemini_summaries(
+                    st.session_state.get("found_labels", []),
+                    st.session_state.get("avg_confidence", 0)
+                )
+
             create_pdf_report(
                 st.session_state.get("image"),
                 st.session_state.get("overlay"),
-                f"Tumor structures detected: {', '.join(st.session_state.get('found_labels', []))} | Confidence: {st.session_state.get('avg_confidence', 0):.2f}%",
+                summary_text,
                 guideline_input,
-                "N/A",
+                report_text,
                 out_pdf
             )
+
+
 
             with open(out_pdf, "rb") as file:
                 st.download_button("⬇️ Download Report PDF", data=file, file_name=out_pdf, mime="application/pdf")

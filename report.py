@@ -20,12 +20,19 @@ def create_pdf_report(image, mask, summary, guideline, full_report_text, out_pat
     width, height = letter
     y = height - 50
 
+    def check_page_end(y):
+        if y < 70:
+            c.showPage()
+            c.setFont("Helvetica", 12)
+            return height - 50
+        return y
+
     c.setFont("Helvetica-Bold", 16)
-    c.drawString(50, y, "🧠 TumorAI Report")
+    c.drawString(50, y, "■ TumorAI Report")
     y -= 30
 
     c.setFont("Helvetica", 12)
-    c.drawString(50, y, "📅 Generated via TumorAI")
+    c.drawString(50, y, "■ Generated via TumorAI")
     y -= 40
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_input:
@@ -40,6 +47,7 @@ def create_pdf_report(image, mask, summary, guideline, full_report_text, out_pat
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "Uploaded MRI Slice")
     y -= 10
+    y = check_page_end(y)
     c.drawImage(ImageReader(input_path), 50, y - 220, width=300, height=220, preserveAspectRatio=True)
     y -= 240
 
@@ -47,6 +55,7 @@ def create_pdf_report(image, mask, summary, guideline, full_report_text, out_pat
     c.setFont("Helvetica-Bold", 14)
     c.drawString(50, y, "Segmentation Overlay")
     y -= 10
+    y = check_page_end(y)
     c.drawImage(ImageReader(mask_path), 50, y - 220, width=300, height=220, preserveAspectRatio=True)
     y -= 240
 
@@ -57,29 +66,40 @@ def create_pdf_report(image, mask, summary, guideline, full_report_text, out_pat
     text_obj = c.beginText(50, y)
     text_obj.setFont("Helvetica", 12)
     for line in wrap_text(summary, 90):
+        y = check_page_end(y)
+        text_obj.setTextOrigin(50, y)
         text_obj.textLine(line)
+        y -= 15
     c.drawText(text_obj)
-    y = text_obj.getY() - 20
+    y -= 20
 
     # Guideline
     c.setFont("Helvetica-Bold", 14)
-    c.drawString(50, y, "🧾 Clinical Guideline")
+    y = check_page_end(y)
+    c.drawString(50, y, "■ Clinical Guideline")
     y -= 20
     text_obj = c.beginText(50, y)
     text_obj.setFont("Helvetica", 12)
     for line in wrap_text(guideline, 90):
+        y = check_page_end(y)
+        text_obj.setTextOrigin(50, y)
         text_obj.textLine(line)
+        y -= 15
     c.drawText(text_obj)
-    y = text_obj.getY() - 20
+    y -= 20
 
     # Full Report
     c.setFont("Helvetica-Bold", 14)
-    c.drawString(50, y, "📝 Full Clinical Report")
+    y = check_page_end(y)
+    c.drawString(50, y, "■ Full Clinical Report")
     y -= 20
     text_obj = c.beginText(50, y)
     text_obj.setFont("Helvetica", 12)
     for line in wrap_text(full_report_text, 90):
+        y = check_page_end(y)
+        text_obj.setTextOrigin(50, y)
         text_obj.textLine(line)
+        y -= 15
     c.drawText(text_obj)
 
     c.save()
