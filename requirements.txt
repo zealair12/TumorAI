@@ -11,4 +11,5 @@ torch
 transformers @ git+https://github.com/huggingface/transformers.git
 python-docx
 docx2pdf
+reportlab
 
