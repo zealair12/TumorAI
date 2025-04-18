@@ -88,6 +88,9 @@ Future integrations may include:
 - Real-time analysis of DICOM datasets
 - Integration with platforms like **Hugging Face Spaces** or **Render**
 
+![Launch TumorAI](QR-Code.png)
+
+
 ---
 
 ## 🛠️ Installation
