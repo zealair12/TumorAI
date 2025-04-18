@@ -12,7 +12,7 @@ def get_summarizer():
     )
 
 def summarize_report(summarizer, report_text):
-    if len(report_text.strip().split()) < 15:
+    if len(report_text.strip().split()) < 1:
         return "⚠️ Please enter a full radiology report. This input is too short for meaningful summarization."
 
     result = summarizer(
