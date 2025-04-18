@@ -1,3 +1,4 @@
+import io
 import sys
 import os
 import streamlit as st
@@ -103,11 +104,13 @@ elif selected == "Upload & Analyze":
         with sample_col1:
             if st.button("Load Sample Image 1"):
                 with open("sample_images/example1.jpg", "rb") as f:
-                    uploaded = f
+                    uploaded = io.BytesIO(f.read())
+
         with sample_col2:
             if st.button("Load Sample Image 2"):
                 with open("sample_images/example2.jpg", "rb") as f:
-                    uploaded = f
+                    uploaded = io.BytesIO(f.read())
+
 
     if not uploaded:
         st.info("👆 Upload or select an MRI slice to begin analysis")
