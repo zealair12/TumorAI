@@ -70,9 +70,18 @@ with st.sidebar:
         }
     )
 
+# Global Slack Ping Button (for testing regardless of tab)
 st.markdown("---")
+if st.button("🔔 Ping Slack (test)"):
+    if SLACK_WEBHOOK:
+        success = send_slack_message(SLACK_WEBHOOK, "✅ TumorAI test ping successful from web app.")
+        if success:
+            st.success("Slack message sent!")
+        else:
+            st.error("Slack message failed. Check webhook or logs.")
+    else:
+        st.warning("SLACK_WEBHOOK not loaded. Check your secrets config.")
 
-# 🔔 Slack Ping Test Button
 if selected == "Home":
     st.title("🧠 TumorAI")
     st.markdown("""
@@ -80,16 +89,6 @@ if selected == "Home":
     TumorAI is an intelligent assistant that performs tumor segmentation on brain MRI slices.
     Upload a scan, visualize detected regions, and generate a professional PDF report.
     """)
-
-    if st.button("🔔 Ping Slack (test)"):
-        if SLACK_WEBHOOK:
-            success = send_slack_message(SLACK_WEBHOOK, "✅ TumorAI test ping successful from web app.")
-            if success:
-                st.success("Slack message sent!")
-            else:
-                st.error("Slack message failed. Check webhook or logs.")
-        else:
-            st.warning("SLACK_WEBHOOK not loaded. Check your secrets config.")
 
 elif selected == "Upload & Analyze":
     uploaded = st.file_uploader("📄 Upload an MRI slice", type=["png", "jpg", "jpeg"])
