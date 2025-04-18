@@ -13,3 +13,4 @@ models/
 *.pdf
 *.png
 .cache/
+.streamlit/secrets.toml
