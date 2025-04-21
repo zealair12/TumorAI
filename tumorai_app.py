@@ -103,12 +103,12 @@ elif selected == "Upload & Analyze":
         sample_col1, sample_col2 = st.columns(2)
         with sample_col1:
             if st.button("Load Sample Image 1"):
-                with open("sample_images/example1.jpg", "rb") as f:
+                with open("sample_images/example4.jpg", "rb") as f:
                     uploaded = io.BytesIO(f.read())
 
         with sample_col2:
             if st.button("Load Sample Image 2"):
-                with open("sample_images/example2.jpg", "rb") as f:
+                with open("sample_images/example3.jpg", "rb") as f:
                     uploaded = io.BytesIO(f.read())
 
 
