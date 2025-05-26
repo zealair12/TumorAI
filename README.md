@@ -1,4 +1,4 @@
-# 🧠 TumorAI: Brain Tumor Segmentation & Reporting System
+# TumorAI: Brain Tumor Segmentation & Reporting System
 
 TumorAI is a streamlined diagnostic tool that performs tumor segmentation on brain MRI slices using deep learning. It visualizes tumor structures, generates clinical-style reports, and sends automatic alerts to professional channels such as Slack. This project was designed and implemented with emphasis on innovation, automation, and medical impact.
 
@@ -23,7 +23,7 @@ TumorAI addresses these challenges by providing an **AI-first assistant** that a
 
 ---
 
-## 🧠 Model Training & Technology Stack
+## Model Training & Technology Stack
 
 TumorAI's segmentation model is built on a U-Net architecture, a convolutional neural network designed for biomedical image segmentation. Here's how it works:
 
@@ -75,7 +75,7 @@ TumorAI's segmentation model is built on a U-Net architecture, a convolutional n
 
 ---
 
-## 🤖 Automation & Workflow Potential
+## Automation & Workflow Potential
 
 TumorAI is not just a demo — it lays the foundation for real-world clinical workflows such as:
 
